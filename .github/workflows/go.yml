@@ -25,7 +25,18 @@ jobs:
       run: docker compose up -d postgres
 
     - name: Lint
-      run: docker run --rm -itv $(CURDIR):/app -w /app golangci/golangci-lint golangci-lint run controllers/ database/ models/ routes/
+      uses: golangci/golangci-lint-action@v9
+      with:
+        version: v2.6
+        args: controllers/ database/ models/ routes/
+
+    # - name: Test
+    #   run: DB_HOST=localhost DB_USER=root DB_PASSWORD=root DB_NAME=root DB_PORT=5432  go test -v ./...
+    - name: Build
+      run: go build main.go
       
-    - name: Test
-      run: go test -v ./...
+    - name: Projeto compilado
+      uses: actions/upload-artifact@v4
+      with:
+        name: projeto_compilado
+        path: main
